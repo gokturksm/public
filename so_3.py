@@ -1,19 +1,28 @@
 import pandas as pd
 
 df = pd.DataFrame(
-   [[1, 1, 1, 0, 0, 1],
-    [1, 0, 0, 0, 0, 0],
-    [1, 1, 0, 0, 0, 0],
-    [1, 1, 0, 0, 0, 1],
-    [1, 1, 0, 0, 1, 0],
-    [1, 1, 0, 0, 0, 0]], columns=list("ABCDEF"))
+    [
+        [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+        [0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+        [0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1],
+        [0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1],
+        [0, 0, 0, 0, 1, 1, 0, 1, 0, 1, 1, 1, 1],
+        [0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1],
+        [1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    ],
+    columns=list("ABCDEFGHIJKLM"),
+)
 
-df.index = ['1', '2', '3', '4', '5', '6']
+df.index = ["1", "2", "3", "4", "5", "6", "7", "8", "9"]
 
 first_case = pd.DataFrame(
-   [[1, 1, 1, 1, 1, 1]], columns=list("ABCDEF"), index=['FirstCase'])
+    [[1, 1, 1, 1, 1, 1]], columns=list("ABCDEF"), index=["FirstCase"]
+)
 
 all_case = pd.concat([first_case, df])
+
 
 def case_finder(df):
     df_case = df.apply(lambda x: x.value_counts(), axis=1).fillna(0)
@@ -31,10 +40,12 @@ def check_together(x):
 def check_in(pre, now):
     return pre.isin(now).all()
 
+
 def check_odd(i):
     act = check_together(i)[0]
-    who = check_together(i)[1][~check_together(i)[1].isin(check_together(i-1)[1])]
+    who = check_together(i)[1][~check_together(i)[1].isin(check_together(i - 1)[1])]
     return act, who
+
 
 df = case_finder(all_case)
 total = all_case.shape[0]
@@ -46,12 +57,12 @@ all_case_orj = all_case.copy()
 while True:
     for i in range(total):
         act, ind = check_together(i)
-        if ind.size == 1:
+        if i == 0:
             print("Initiliazed!")
             all_acts.append([act, ind])
             pass
         else:
-            p_act, p_ind = check_together(i-1)
+            p_act, p_ind = check_together(i - 1)
             if check_in(p_ind, ind) == True:
                 print("So a new person joins us!")
                 all_acts.append([act, ind])
@@ -60,7 +71,7 @@ while True:
                 # act, who = check_odd(i)
                 last_stable.append([i, p_ind])
                 continue
-        if act == 'FirstCase':
+        if act == "FirstCase":
             break
 
     if len(last_stable) == 0:
@@ -78,5 +89,3 @@ while True:
 print(all_acts)
 
 x = pd.DataFrame(all_acts)
-
-
